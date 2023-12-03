@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cliente</title>
+</head>
+
+<body>
+    <!-- Formulário de Registro de Usuário -->
+    <form id="user-registration-form">
+        <h2>Cadastro de Usuário</h2>
+        <input type="text" id="user-name" placeholder="Nome do usuário" required>
+        <button type="submit">Cadastrar</button>
+    </form>
+
+    <!-- Área Principal (Invisível por padrão) -->
+    <main id="main" style="display: none;">
+
+        <!-- Lista de Clientes Cadastrados -->
+        <div id="client-list-div">
+            <h2>Clientes Cadastrados</h2>
+            <ul id="client-list"></ul>
+        </div>
+
+        <!-- Botões de Ação -->
+        <div class="botoes">
+            <button type="button" id="add_product_button">Adicionar produtos</button>
+            <button type="button" id="relatorio_button">Relatório de Movimentações</button>
+            <button type="button" id="relatorio_unsold_button">Relatório não vendidos</button>
+            <button type="button" id="table_button">Mostrar Estoque</button>
+        </div>
+
+        <!-- Formulário de Registro de Produto (Invisível por padrão) -->
+        <form id="product-registration-form" style="display: none;">
+            <h2>Cadastro de Produto</h2>
+            <input type="number" id="product-code" placeholder="Código do produto" required>
+            <input type="text" id="product-name" placeholder="Nome do produto" required>
+            <input type="text" id="product-description" placeholder="Descrição do produto" required>
+            <input type="number" id="product-minstock" placeholder="Estoque mínimo" required>
+            <input type="number" id="price" placeholder="Preço" required>
+            <button type="submit">Cadastrar</button>
+        </form>
+
+        <!-- Tabela de Produtos (Invisível por padrão) -->
+        <table id="tabela-produtos" style="display: none;">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Produto</th>
+                    <th>Descrição</th>
+                    <th>Estoque Mínimo</th>
+                    <th>Preço</th>
+                    <th>Quantidade</th>
+                    <th class="acao">Aumentar ou Diminuir</th>
+                </tr>
+            </thead>
+            <tbody id="product-list">
+                <!-- Aqui serão inseridos os produtos dinamicamente -->
+            </tbody>
+        </table>
+
+        <!-- Área de Relatório (Invisível por padrão) -->
+        <div id="relatorio" style="display: none;">
+            <!-- Formulário de Geração de Relatório -->
+            <form id="relatorio-form">
+                <h2>Gerar Relatório</h2>
+                <label for="minutes">Minutos atrás:</label>
+                <input type="number" id="minutes" placeholder="Informe os minutos" required>
+                <button type="submit">Gerar Relatório</button>
+            </form>
+
+            <!-- Container do Relatório de Movimentações -->
+            <div id="report-container">
+                <h2>Relatório de Movimentos</h2>
+                <!-- Tabela de Relatório de Movimentos -->
+                <table id="report-table">
+                    <thead>
+                        <tr>
+                            <th>Código do Produto</th>
+                            <th>Nome do Produto</th>
+                            <th>Movimentos</th>
+                        </tr>
+                    </thead>
+                    <tbody id="report-body">
+                        <!-- Aqui serão adicionadas as linhas da tabela do relatório -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Área de Relatório de Produtos Não Vendidos (Invisível por padrão) -->
+        <div id="relatorio_unsold" style="display: none;">
+            <!-- Formulário de Geração de Relatório de Produtos Não Vendidos -->
+            <form id="not-sold-report-form">
+                <h2>Gerar Relatório</h2>
+                <label for="not-sold-minutes">Produtos Não Vendidos nos Últimos Minutos:</label>
+                <input type="number" id="not-sold-minutes" placeholder="Minutos" required>
+                <button type="submit">Gerar Relatório</button>
+            </form>
+
+            <!-- Tabela de Relatório de Produtos Não Vendidos -->
+            <h2>Relatório Unsold</h2>
+            <table id="unsold-report-table">
+                <thead>
+                    <tr>
+                        <th>Código do Produto</th>
+                        <th>Nome do Produto</th>
+                    </tr>
+                </thead>
+                <tbody id="unsold-report-body">
+                    <!-- Aqui serão adicionadas as linhas da tabela do relatório de produtos não vendidos -->
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <!-- Inclusão do arquivo JavaScript -->
+    <script src="Cliente.js"></script>
+</body>
+
+</html>
