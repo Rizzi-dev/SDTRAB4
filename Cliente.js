@@ -243,6 +243,9 @@ function addProductToTable(product) {
             .then((response) => response.json())
             .then((data) => {
                 console.log(data.message);
+                if(data.notify){
+                    alert("Quantidade abaixo do estoque mínimo!")
+                }
             })
             .catch((error) => {
                 console.log('Erro ao subtrair produto:', error);
