@@ -1,49 +1,43 @@
-const eventSource = new EventSource('http://127.0.0.1:5000/sse');
+// Estabelece uma conexão com o servidor usando SSE
+let eventSource = new EventSource('http://127.0.0.1:5000/sse');
 
+// Trata eventos recebidos por SSE
 eventSource.onmessage = function(event) {
-    // Manipule eventos recebidos
+    // Exibe dados do evento no console
     console.log(event.data);
 
-    // Converta os dados recebidos de uma string JSON para um array de objetos
-    
+    // Converte os dados recebidos de uma string JSON para um objeto JavaScript
     jsonData = JSON.parse(event.data);
-    const unsoldProducts = jsonData["unsold_products"];
+    let unsoldProducts = jsonData["unsold_products"];
+    let lowStockProducts = jsonData["low_stock_products"]
 
-    const lowStockProducts = jsonData["low_stock_products"]
-
+    // Exibe os dados no console do navegador
     console.log(unsoldProducts, lowStockProducts)
-    // Construa a mensagem a ser exibida
 
+    // letrua a mensagem a ser exibida
     let mensagem = "Produtos não vendidos:\n";
     unsoldProducts.forEach(prod => {
-            mensagem += `Código: ${prod.code}, Nome: ${prod.name}\n`;
+        mensagem += `Código: ${prod.code}, Nome: ${prod.name}\n`;
     });
     mensagem += "\nProdutos com estoque baixo:\n"
     lowStockProducts.forEach(prod => {
         mensagem += `Código: ${prod.code}, Nome: ${prod.name}\n`;
     });
 
-
-    alert(mensagem);
+    // Exibe a mensagem em um console.loga
+    console.log(mensagem);
 };
 
-eventSource.onerror = function(error) {
-    // Trate erros de conexão
-    console.error('Erro na conexão SSE:', error);
-};
+// Obtém referência ao formulário de registro de usuário no HTML
+let userRegistrationForm = document.getElementById('user-registration-form');
 
-
- 
-
-
-
-const userRegistrationForm = document.getElementById('user-registration-form');
+// Adiciona um evento de envio ao formulário de registro de usuário
 userRegistrationForm.addEventListener('submit', (event) => {
     event.preventDefault();
-    const userNameInput = document.getElementById('user-name');
-    const userName = userNameInput.value;
+    let userNameInput = document.getElementById('user-name');
+    let userName = userNameInput.value;
 
-    // Enviar solicitação de registro de usuário para o servidor
+    // Envia solicitação de registro de usuário para o servidor
     fetch('http://127.0.0.1:5000/api/register', {
         method: 'POST',
         headers: {
@@ -54,21 +48,20 @@ userRegistrationForm.addEventListener('submit', (event) => {
     .then((response) => response.json())
     .then((data) => {
         console.log(data.message);
-        userNameInput.value = ''; // Limpar o campo de entrada após o registro
+        userNameInput.value = ''; // Limpa o campo de entrada após o registro
         userRegistrationForm.style.display = "none";
 
         productRegistrationForm.style.display = "flex";
 
-        const mainContent = document.getElementById('main')
+        let mainContent = document.getElementById('main')
         mainContent.style.removeProperty('display');
-
-
     })
     .catch((error) => {
-        console.error('Erro no registro de usuário:', error);
+        console.log('Erro no registro de usuário:', error);
     });
 
-    fetchClientList()
+    // Chama a função para obter e exibir a lista de clientes
+    fetchClientList();
 });
 
 // Função para buscar a lista de clientes do servidor
@@ -81,53 +74,56 @@ function fetchClientList() {
     })
     .then((response) => response.json())
     .then((data) => {
-        const clientList = document.getElementById('client-list');
-        clientList.innerHTML = ''; // Limpar a lista existente
+        let clientList = document.getElementById('client-list');
+        clientList.innerHTML = ''; // Limpa a lista existente
 
+        // Adiciona cada cliente à lista
         data.forEach((client) => {
-            const listItem = document.createElement('li');
+            let listItem = document.createElement('li');
             listItem.textContent = client;
             clientList.appendChild(listItem);
         });
     })
     .catch((error) => {
-        console.error('Erro ao buscar a lista de clientes:', error);
+        console.log('Erro ao buscar a lista de clientes:', error);
     });
 }
 
-// Chame a função para buscar a lista de clientes assim que a página for carregada
+// Chama a função para buscar a lista de clientes assim que a página for carregada
 fetchClientList();
 
-const productRegistrationForm = document.getElementById('product-registration-form');
+// Obtém referência ao formulário de registro de produto no HTML
+let productRegistrationForm = document.getElementById('product-registration-form');
+
+// Adiciona um evento de envio ao formulário de registro de produto
 productRegistrationForm.addEventListener('submit', (event) => {
     event.preventDefault();
 
-    const codeInput = document.getElementById('product-code');
-    const nameInput = document.getElementById('product-name');
-    const descriptionInput = document.getElementById('product-description');  // Adicionado para receber a descrição
-    const priceInput = document.getElementById('price');
-    const minStockInput = document.getElementById('product-minstock');  // Adicionado para receber o estoque mínimo
+    // Obtém valores dos campos do formulário
+    let codeInput = document.getElementById('product-code');
+    let nameInput = document.getElementById('product-name');
+    let descriptionInput = document.getElementById('product-description');
+    let priceInput = document.getElementById('price');
+    let minStockInput = document.getElementById('product-minstock');
 
-    const code = codeInput.value;
-    const name = nameInput.value;
-    const description = descriptionInput.value;  // Recebe a descrição
-    const price = parseFloat(priceInput.value);
-    const minStock = parseFloat(minStockInput.value);  // Recebe o estoque mínimo
+    let code = codeInput.value;
+    let name = nameInput.value;
+    let description = descriptionInput.value;
+    let price = parseFloat(priceInput.value);
+    let minStock = parseFloat(minStockInput.value);
 
-    // Verifique se os campos não estão vazios
+    // Verifica se os campos não estão vazios
     if (code.trim() !== '' && name.trim() !== '' && !isNaN(price) && price >= 0 && !isNaN(minStock) && minStock >= 0) {
-        // Crie um objeto de produto com as informações inseridas
-        const product = {
+        // Cria um objeto de produto com as informações inseridas
+        let product = {
             code,
             name,
             description,
-            minStock, // Você pode ajustar isso conforme necessário
+            minStock,
             price,
         };
 
-        
-
-        // Enviar solicitação de registro de usuário para o servidor
+        // Envia solicitação de registro de produto para o servidor
         fetch('http://127.0.0.1:5000/api/products/register', {
             method: 'POST',
             headers: {
@@ -137,79 +133,78 @@ productRegistrationForm.addEventListener('submit', (event) => {
         })
         .then((response) => response.json())
         .then((data) => {
-            // Adicione o produto à tabela
+            // Adiciona o produto à tabela se o registro for bem-sucedido
             if(data.message === "Produto registrado com sucesso") addProductToTable(product);
             console.log(data.message);
         })
         .catch((error) => {
-            console.error('Erro no registro de produto:', error);
+            console.log('Erro no registro de produto:', error);
         });
 
-        // Limpe os campos de entrada
+        // Limpa os campos de entrada
         codeInput.value = '';
         nameInput.value = '';
         priceInput.value = '';
 
-        fetchProductList()
+        // Atualiza a lista de produtos
+        fetchProductList();
     } else {
-        // Exiba uma mensagem de erro se algum campo estiver vazio ou o preço for inválido
-        alert('Por favor, preencha todos os campos corretamente.');
+        // Exibe mensagem de erro se algum campo estiver vazio ou o preço for inválido
+        console.log('Por favor, preencha todos os campos!');
     }
 });
 
 // Função para adicionar um produto à tabela
 function addProductToTable(product) {
+    let productList = document.getElementById('product-list');
+    let newRow = productList.insertRow();
+    // Define o ID da linha igual ao código do produto
+    newRow.id = product.code; 
+    
 
-    const productList = document.getElementById('product-list');
-    const newRow = productList.insertRow();
-    newRow.id = product.code; //  ID da linha igual ao código do produto
-
-    // Coluna do Código
-    const codeCell = newRow.insertCell(0);
+    // Adiciona células à nova linha
+    let codeCell = newRow.insertCell(0);
     codeCell.textContent = product.code;
-    // Coluna do Produto
-    const productCell = newRow.insertCell(1);
+
+    let productCell = newRow.insertCell(1);
     productCell.textContent = product.name;
-    // Coluna da Descrição
-    const descriptionCell = newRow.insertCell(2);
+
+    let descriptionCell = newRow.insertCell(2);
     descriptionCell.textContent = product.description;
-    // Coluna do Estoque Mínimo
-    const minStockCell = newRow.insertCell(3);
+
+    let minStockCell = newRow.insertCell(3);
     minStockCell.textContent = product.minStock;
-    // Coluna do Preço
-    const priceCell = newRow.insertCell(4);
+
+    let priceCell = newRow.insertCell(4);
     priceCell.textContent = product.price;
-    // Coluna da Quantidade
-    const quantityCell = newRow.insertCell(5);
+
+    let quantityCell = newRow.insertCell(5);
     quantityCell.textContent = product.quantity
 
-    // Coluna das Ações
-    const actionsCell = newRow.insertCell(6);
-    const addButton = document.createElement('button');
+    let actionsCell = newRow.insertCell(6);
+    let addButton = document.createElement('button');
     addButton.textContent = 'Adicionar';
-    const subtractButton = document.createElement('button');
+    let subtractButton = document.createElement('button');
     subtractButton.textContent = 'Subtrair';
 
-
-    const quantityInput = document.createElement('input');
+    let quantityInput = document.createElement('input');
     quantityInput.type = 'number';
     quantityInput.min = 0;
-    quantityInput.value = product.quantity || 0; // Define o valor inicial como a quantidade do produto ou 0
+    // Define o valor inicial como a quantidade do produto ou 0
+    quantityInput.value = product.quantity || 0; 
 
     actionsCell.appendChild(quantityInput);
     actionsCell.appendChild(addButton);
     actionsCell.appendChild(subtractButton);
 
-    // Manipuladores de eventos para os botões de adicionar e subtrair
+    // Adiciona manipuladores de eventos para os botões de adicionar e subtrair
     addButton.addEventListener('click', () => {
-        const quantityToAdd = parseInt(quantityInput.value, 10);
-        
-        // Obtém o ID da linha atual
-        const productId = newRow.id; // newRow é a linha atual que foi definida com o ID
-        
-        // Verifique se o productId não está vazio
+        let quantityToAdd = parseInt(quantityInput.value, 10);
+        let productId = newRow.id; // Obtém o ID da linha atual
+
+        // Verifica se o productId não está vazio
         if (productId) {
-            // Enviar solicitação de adicionar produto para o servidor com o ID e a quantidade
+            // Envia solicitação para adicionar produto ao servidor com o ID e a quantidade
             fetch(`http://127.0.0.1:5000/api/products/entry/${productId}`, {
                 method: 'POST',
                 headers: {
@@ -222,23 +217,22 @@ function addProductToTable(product) {
                 console.log(data.message);
             })
             .catch((error) => {
-                console.error('Erro ao adicionar produto:', error);
+                console.log('Erro ao adicionar produto:', error);
             });
         } else {
-            console.error('ID da linha não encontrado.');
+            console.log('ID da linha não encontrado.');
         }
-        fetchProductList()
+        // Atualiza a lista de produtos
+        fetchProductList();
     });
 
     subtractButton.addEventListener('click', () => {
-        const quantityToSubtract = parseInt(quantityInput.value, 10);
-        
-        // Obtém o ID da linha atual
-        const productId = newRow.id; // newRow é a linha atual que foi definida com o ID
-        
-        // Verifique se o productId não está vazio
+        let quantityToSubtract = parseInt(quantityInput.value, 10);
+        let productId = newRow.id; // Obtém o ID da linha atual
+
+        // Verifica se o productId não está vazio
         if (productId) {
-            // Enviar solicitação de subtrair produto do servidor com o ID e a quantidade
+            // Envia solicitação para subtrair produto do servidor com o ID e a quantidade
             fetch(`http://127.0.0.1:5000/api/products/exit/${productId}`, {
                 method: 'POST',
                 headers: {
@@ -249,88 +243,93 @@ function addProductToTable(product) {
             .then((response) => response.json())
             .then((data) => {
                 console.log(data.message);
-                if(data.notify){
-                    alert("Quantidade abaixo do estoque mínimo!")
-                }
             })
             .catch((error) => {
-                console.error('Erro ao subtrair produto:', error);
+                console.log('Erro ao subtrair produto:', error);
             });
         } else {
-            console.error('ID da linha não encontrado.');
+            console.log('ID da linha não encontrado.');
         }
-        fetchProductList()
+        // Atualiza a lista de produtos
+        fetchProductList();
     });
-    
-    
 }
 
+// Obtém referência ao botão de registro de produto no HTML
+let registerProductButton = document.getElementById('add_product_button');
 
-const registerProductButton = document.getElementById('add_product_button');
+// Adiciona um evento de clique ao botão de registro de produto
 registerProductButton.addEventListener('click', () => {
+    // Alterna a visibilidade do formulário de registro de produto
     if (productRegistrationForm.style.display === 'none') {
         productRegistrationForm.style.display = 'flex';
     } else {
         productRegistrationForm.style.display = 'none';
     }
-})
+});
 
+// Obtém referências aos elementos do relatório no HTML
+let relatorio_popup = document.getElementById('relatorio');
+let relatorioButton = document.getElementById('relatorio_button');
 
-const relatorio_popup = document.getElementById('relatorio');
-const relatorioButton = document.getElementById('relatorio_button');
-
+// Adiciona um evento de clique ao botão de relatório
 relatorioButton.addEventListener('click', () => {
-
+    // Alterna a visibilidade do elemento de relatório
     if (relatorio_popup.style.display === 'none') {
         relatorio_popup.style.display = 'flex';
     } else {
         relatorio_popup.style.display = 'none';
     }
-})
+});
 
+// Obtém referências aos elementos do relatório de produtos não vendidos no HTML
+let relatorioUnsold = document.getElementById('relatorio_unsold');
+let relatorioUnsoldButton = document.getElementById('relatorio_unsold_button');
 
-const relatorioUnsold = document.getElementById('relatorio_unsold');
-const relatorioUnsoldButton = document.getElementById('relatorio_unsold_button');
-
+// Adiciona um evento de clique ao botão de relatório de produtos não vendidos
 relatorioUnsoldButton.addEventListener('click', () => {
-  
+    // Alterna a visibilidade do elemento de relatório de produtos não vendidos
     if (relatorioUnsold.style.display === 'none') {
         relatorioUnsold.style.display = 'flex';
     } else {
         relatorioUnsold.style.display = 'none';
     }
-})
+});
 
+// Obtém referências aos elementos da tabela de produtos no HTML
+let tabelaProdutos = document.getElementById('tabela-produtos')
+let tabelaButton = document.getElementById('table_button')
 
-
-const tabelaProdutos = document.getElementById('tabela-produtos')
-const tabelaButton = document.getElementById('table_button')
-
+// Adiciona um evento de clique ao botão de exibição da tabela de produtos
 tabelaButton.addEventListener('click', () => {
+    // Verifica se a tabela de produtos está oculta
     if (tabelaProdutos.style.display === 'none') {
+        // Remove a propriedade 'display' para tornar a tabela visível
         tabelaProdutos.style.removeProperty('display');
     } else {
+        // Oculta a tabela de produtos
         tabelaProdutos.style.display = 'none';
     }
 })
 
+// Seleciona o formulário de relatório no HTML
+let relatorioForm = document.getElementById('relatorio-form');
 
-// Seleciona o formulário do relatório
-const relatorioForm = document.getElementById('relatorio-form');
-
+// Adiciona um evento de envio ao formulário de relatório
 relatorioForm.addEventListener('submit', (event) => {
     event.preventDefault();
-    const minutesInput = document.getElementById('minutes');
-    const minutes = parseInt(minutesInput.value, 10);
+    // Obtém o valor dos minutos do input
+    let minutesInput = document.getElementById('minutes');
+    let minutes = parseInt(minutesInput.value, 10);
 
-    // Verifique se os minutos são válidos
+    // Verifica se os minutos são válidos
     if (!isNaN(minutes) && minutes >= 0) {
-        const reportTable = document.getElementById('report-table');
-        
-        // Clear the previous report data
+        let reportTable = document.getElementById('report-table');
+
+        // Limpa os dados do relatório anterior
         reportTable.innerHTML = '';
 
-        // Enviar solicitação de relatório para o servidor
+        // Envia solicitação de relatório para o servidor
         fetch(`http://127.0.0.1:5000/api/reports/movements/${minutes}`, {
             method: 'GET',
             headers: {
@@ -339,9 +338,10 @@ relatorioForm.addEventListener('submit', (event) => {
         })
         .then((response) => response.json())
         .then((data) => {
+            // Adiciona as informações do relatório à tabela
             data.forEach((productInfo) => {
                 console.log(productInfo)
-                const row = reportTable.insertRow();
+                let row = reportTable.insertRow();
                 row.innerHTML = `
                     <td>${productInfo.code}</td>
                     <td>${productInfo.name}</td>
@@ -354,37 +354,41 @@ relatorioForm.addEventListener('submit', (event) => {
                     </td>
                 `;
             });
-        
-            // Exibir o relatório
+
+            // Exibe a tabela do relatório
             reportTable.style.removeProperty('display');
             console.log('Relatório de Movimentos:', data);
         })
-        
         .catch((error) => {
-            console.error('Erro ao buscar o relatório:', error);
+            console.log('Erro ao buscar o relatório:', error);
         });
     } else {
-        alert('Por favor, insira um valor válido para os minutos.');
+        // Exibe console.loga se os minutos não forem válidos
+        console.log('Por favor, insira um valor válido para os minutos.');
     }
 });
 
+// Seleciona elementos do relatório de produtos não vendidos no HTML
+let unsoldReportTable = document.getElementById('unsold-report-table');
+let unsoldReportBody = document.getElementById('unsold-report-body');
 
+// Seleciona o formulário do relatório de produtos não vendidos
+let notSoldReportForm = document.getElementById('not-sold-report-form');
 
-const unsoldReportTable = document.getElementById('unsold-report-table');
-const unsoldReportBody = document.getElementById('unsold-report-body');
-
-const notSoldReportForm = document.getElementById('not-sold-report-form');
-
+// Adiciona um evento de envio ao formulário de relatório de produtos não vendidos
 notSoldReportForm.addEventListener('submit', (event) => {
     event.preventDefault();
 
-    const minutesInput = document.getElementById('not-sold-minutes');
-    const minutes = parseInt(minutesInput.value, 10);
+    // Obtém o valor dos minutos do input
+    let minutesInput = document.getElementById('not-sold-minutes');
+    let minutes = parseInt(minutesInput.value, 10);
 
+    // Verifica se os minutos são válidos
     if (!isNaN(minutes) && minutes >= 0) {
-        unsoldReportTable.innerHTML = ''
+        // Limpa o conteúdo da tabela de relatório de produtos não vendidos
+        unsoldReportTable.innerHTML = '';
 
-
+        // Envia solicitação para obter relatório de produtos não vendidos do servidor
         fetch(`http://127.0.0.1:5000/api/reports/not-sold-since/${minutes}`, {
             method: 'GET',
             headers: {
@@ -393,36 +397,31 @@ notSoldReportForm.addEventListener('submit', (event) => {
         })
         .then((response) => response.json())
         .then((data) => {
-            // Limpar o conteúdo da tabela antes de adicionar os novos dados
+            // Limpa o conteúdo da tabela antes de adicionar os novos dados
             unsoldReportBody.innerHTML = '';
 
+            // Adiciona informações do relatório à tabela
             data.forEach((productInfo) => {
                 console.log(productInfo)
-                const row = unsoldReportTable.insertRow();
+                let row = unsoldReportTable.insertRow();
                 row.innerHTML = `
                     <td>${productInfo.code}</td>
                     <td>${productInfo.name}</td>
                 `;
             });
 
+            // Exibe a tabela do relatório de produtos não vendidos
             unsoldReportTable.style.removeProperty('display');
             console.log('Relatório de Produtos Não Vendidos:', data);
         })
         .catch((error) => {
-            console.error('Erro ao buscar o relatório de produtos não vendidos:', error);
+            console.log('Erro ao buscar o relatório de produtos não vendidos:', error);
         });
     } else {
-        alert('Por favor, insira um valor válido para os minutos.');
+        // Exibe console.loga se os minutos não forem válidos
+        console.log('Por favor, insira um valor válido para os minutos.');
     }
 });
-
-
-
-
-
-
-
-
 
 // Função para buscar a lista de produtos do servidor
 function fetchProductList() {
@@ -435,7 +434,7 @@ function fetchProductList() {
     .then((response) => response.json())
     .then((data) => {
         // Limpa a lista existente
-        const productList = document.getElementById('product-list');
+        let productList = document.getElementById('product-list');
         productList.innerHTML = '';
 
         // Itera sobre os produtos recebidos e adiciona à tabela
@@ -444,10 +443,9 @@ function fetchProductList() {
         });
     })
     .catch((error) => {
-        console.error('Erro ao buscar a lista de produtos:', error);
+        console.log('Erro ao buscar a lista de produtos:', error);
     });
 }
-
 
 // Chama a função para buscar a lista de produtos assim que a página for carregada
 fetchProductList();
